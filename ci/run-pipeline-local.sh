@@ -10,7 +10,7 @@ stage Build;      echo "Deploy da Vinheria"; node --version
                   for s in catalogo-service pedidos-service; do echo ">> build $s"; node --check services/$s/server.js; done; end
 stage Testes;     (cd services/catalogo-service && npm test --silent); (cd services/pedidos-service && npm test --silent); end
 stage DevSecOps;  scripts/check-secrets.sh
-                  (cd services/catalogo-service && npm audit --audit-level=high 2>&1 | tail -1) || true; end
+                  for s in catalogo-service pedidos-service; do echo ">> npm audit $s"; (cd services/$s && npm audit --audit-level=high); done; end
 stage Empacotar;  tar -czf $APP_NAME-$RELEASE.tar.gz services infra scripts; ls -lh $APP_NAME-$RELEASE.tar.gz | awk '{print $5, $9}'; end
 stage Deploy;     scripts/deploy.sh $APP_NAME-$RELEASE.tar.gz $PUBLISH_DIR $RELEASE; end
 stage "Smoke test"; scripts/smoke-test.sh $PUBLISH_DIR/current; end
