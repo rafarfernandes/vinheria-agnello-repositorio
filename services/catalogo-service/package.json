@@ -1,0 +1,8 @@
+{
+  "name": "catalogo-service",
+  "version": "1.0.0",
+  "description": "Vinheria Agnello - catalogo-service",
+  "main": "server.js",
+  "scripts": { "start": "node server.js", "test": "node test.js" },
+  "license": "UNLICENSED"
+}

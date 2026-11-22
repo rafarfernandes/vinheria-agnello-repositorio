@@ -1,0 +1,8 @@
+{
+  "name": "pedidos-service",
+  "version": "1.0.0",
+  "description": "Vinheria Agnello - pedidos-service",
+  "main": "server.js",
+  "scripts": { "start": "node server.js", "test": "node test.js" },
+  "license": "UNLICENSED"
+}

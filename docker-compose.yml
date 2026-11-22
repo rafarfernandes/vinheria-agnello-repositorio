@@ -1,0 +1,43 @@
+# Ambiente em containers da Vinheria Agnello.
+# Rede própria (vinheria-net) com DNS interno do Docker: os serviços se encontram pelo nome
+# (catalogo.vinheria.local / pedidos.vinheria.local), como no DNS simulado com dnsmasq.
+# Uso: gere os certificados (infra/gerar-certificados.sh) e depois: docker compose up --build
+services:
+  catalogo:
+    build: ./services/catalogo-service
+    hostname: catalogo
+    environment:
+      JWT_SECRET: ${JWT_SECRET:?defina JWT_SECRET no .env}
+      TLS_CERT: /certs/catalogo.crt
+      TLS_KEY: /certs/catalogo.key
+    volumes:
+      - ./certs:/certs:ro
+    networks:
+      vinheria-net:
+        ipv4_address: 10.10.0.10
+        aliases: [catalogo.vinheria.local]
+
+  pedidos:
+    build: ./services/pedidos-service
+    hostname: pedidos
+    environment:
+      JWT_SECRET: ${JWT_SECRET:?defina JWT_SECRET no .env}
+      CATALOGO_URL: https://catalogo.vinheria.local:8443
+      CA_FILE: /certs/ca.crt
+    volumes:
+      - ./certs/ca.crt:/certs/ca.crt:ro
+    ports:
+      - "8081:8081"   # só o serviço de pedidos é exposto para fora; o catálogo fica na rede interna
+    depends_on: [catalogo]
+    networks:
+      vinheria-net:
+        ipv4_address: 10.10.0.11
+        aliases: [pedidos.vinheria.local]
+
+networks:
+  vinheria-net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.10.0.0/24
+          gateway: 10.10.0.1

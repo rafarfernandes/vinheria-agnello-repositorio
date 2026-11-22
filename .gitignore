@@ -1,0 +1,4 @@
+certs/
+*.tar.gz
+.env
+node_modules/
